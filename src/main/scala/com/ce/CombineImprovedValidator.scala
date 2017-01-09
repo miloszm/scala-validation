@@ -1,21 +1,14 @@
 package com.ce
 
-import cats._
+import cats.Semigroup
 import cats.data._
 import cats.implicits._
-import cats.Semigroup
 import com.ce.validation.{Err, ErrorCode, Validation}
 
 object CombineImprovedValidator {
-//  object ErrorListSemigroup extends Semigroup[List[Err]] {
-//    override def combine(x: List[Err], y: List[Err]): List[Err] = x ::: y
-//  }
-//
-//  implicit val errorListSemigroup = Semigroup(ErrorListSemigroup)
-
   implicit val nonCombiningStringSemigroup = Semigroup(NonCombiningString(""))
 
-  def validateEmail(email: NonCombiningString): Validation[NonCombiningString] = {
+  def validateEmail1(email: NonCombiningString): Validation[NonCombiningString] = {
     val emailRegex = """^[a-zA-Z0-9\.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$""".r
     email match {
       case e if emailRegex.findFirstMatchIn(e.value).isDefined => Validated.valid(e)
@@ -23,7 +16,10 @@ object CombineImprovedValidator {
     }
   }
 
-  def validatePhone(phone: NonCombiningString): Validation[NonCombiningString] = {
+  def validateEmail2(email: NonCombiningString): Validation[NonCombiningString] =
+    if (email.value.toLowerCase contains "good") Validated.valid(email) else Validated.invalid(List(Err(ErrorCode.EmailMustContainWordGood, "Email must contain word 'good'")))
+
+  def validatePhone1(phone: NonCombiningString): Validation[NonCombiningString] = {
     val phoneRegex = """^\+(?:[0-9] ?){6,14}[0-9]$""".r
     phone match {
       case p if phoneRegex.findFirstMatchIn(p.value).isDefined => Validated.valid(p)
@@ -31,20 +27,13 @@ object CombineImprovedValidator {
     }
   }
 
-
-  def validateEmailDomain(email: NonCombiningString): Validation[NonCombiningString] =
-    if (email.value.toLowerCase contains "good") Validated.valid(email) else Validated.invalid(List(Err(ErrorCode.EmailMustContainWordGood, "Email must contain word 'good'")))
-
-  def validateUKCountryCode(phone: NonCombiningString): Validation[NonCombiningString] =
+  def validatePhone2(phone: NonCombiningString): Validation[NonCombiningString] =
     if (phone.value contains "+44") Validated.valid(phone) else Validated.invalid(List(Err(ErrorCode.PhoneMustHaveUKCountryCode, "Phone must have UK country code")))
 
-  def validateData(d: Data3): Validation[Data3] = {
-    val validEmail = validateEmail(d.email).combine(validateEmailDomain(d.email))
-    val validPhoneFormat = validatePhone(d.phone)
-    val validPhoneCountry = validateUKCountryCode(d.phone)
-    val validPhone = validPhoneFormat.combine(validPhoneCountry)
-
-    (validEmail |@| validPhone).map(Data3)
+  def validateData(d: Data2): Validation[Data2] = {
+    val validEmail = validateEmail1(d.email).combine(validateEmail2(d.email))
+    val validPhone = validatePhone1(d.phone).combine(validatePhone2(d.phone))
+    (validEmail |@| validPhone).map(Data2)
   }
 
 }
