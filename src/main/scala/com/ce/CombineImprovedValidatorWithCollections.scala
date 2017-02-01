@@ -5,7 +5,7 @@ import cats.data._
 import cats.implicits._
 import com.ce.validation.{Err, ErrorCode, Validation}
 
-object CombineImprovedValidator extends App {
+object CombineImprovedValidatorWithCollections extends App {
   implicit val nonCombiningStringSemigroup = Semigroup(NonCombiningString(""))
 
   def validateEmailByRegex(email: NonCombiningString): Validation[NonCombiningString] = {
@@ -36,9 +36,12 @@ object CombineImprovedValidator extends App {
       s"phone must have prefix: ${prefix}")))
 
   def validateData(d: MyData): Validation[MyData] = {
-    val validEmail = validateEmailByRegex(d.email).combine(validateEmailByKeyword(d.email, "good"))
+    val emailValidations = List(validateEmailByRegex(d.email), validateEmailByKeyword(d.email, "good"))
 
-    val validPhone = validatePhoneByRegex(d.phone).combine(validatePhoneByPrefix(d.phone, "+44"))
+    val phoneValidations = List(validatePhoneByRegex(d.phone), validatePhoneByPrefix(d.phone, "+44"))
+
+    val validEmail = emailValidations.reduceLeft(_ combine _)
+    val validPhone = phoneValidations.reduceLeft(_ combine _)
 
     (validEmail |@| validPhone).map(MyData)
   }
