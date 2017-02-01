@@ -33,11 +33,11 @@ object AndThenValidator {
   def validateUKCountryCode(phone: NonCombiningString): ValidatedNel[Err, NonCombiningString] =
     if (phone.value contains "+44") Validated.valid(phone) else Validated.invalidNel(Err(ErrorCode.PhoneMustHaveUKCountryCode, "Phone must have UK country code"))
 
-  def validateData(d: Data2): ValidatedNel[Err, Data2] = {
+  def validateData(d: MyData): ValidatedNel[Err, MyData] = {
     val validEmail = validateEmailFormat(d.email).andThen(validateEmailDomain)
     val validPhone = validatePhone(d.phone).andThen(validateUKCountryCode)
 
-    (validEmail |@| validPhone).map(Data2)
+    (validEmail |@| validPhone).map(MyData)
   }
 
 }

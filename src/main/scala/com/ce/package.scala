@@ -8,6 +8,6 @@ package object ce {
     override def combine(x: NonCombiningString, y: NonCombiningString): NonCombiningString = x
   }
 
-  case class Data2(email: NonCombiningString, phone: NonCombiningString)
+  case class MyData(email: NonCombiningString, phone: NonCombiningString)
 
 }

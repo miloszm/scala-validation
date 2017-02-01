@@ -18,7 +18,7 @@ class CombinedValidationOfCaseClassMembers extends FlatSpec with Matchers {
 
   "Validation of data object with invalid members (with non-combining strings)" should
     "contain a list of all validation errors" in {
-    val validation = CombineImprovedValidator.validateData(Data2(NonCombiningString("bad email"), NonCombiningString("bad phone")))
+    val validation = CombineImprovedValidator.validateData(MyData(NonCombiningString("bad email"), NonCombiningString("bad phone")))
     val err1 = Err(ErrorCode.InvalidEmailFormat, "Invalid email format")
     val err2 = Err(ErrorCode.EmailMustContainWordGood, "Email must contain word 'good'")
     val err3 = Err(ErrorCode.PhoneMustBeNumeric, "Phone number must be numeric")
@@ -28,7 +28,7 @@ class CombinedValidationOfCaseClassMembers extends FlatSpec with Matchers {
 
   "Validation of data object with invalid members (with non-combining strings)" should
     "contain partial list of validation errors because andThen does not accumulate errors" in {
-    val validation = AndThenValidator.validateData(Data2(NonCombiningString("bad email"), NonCombiningString("bad phone")))
+    val validation = AndThenValidator.validateData(MyData(NonCombiningString("bad email"), NonCombiningString("bad phone")))
     val err1 = Err(ErrorCode.InvalidEmailFormat, "Invalid email format")
     val err2 = Err(ErrorCode.PhoneMustBeNumeric, "Phone number must be numeric")
     val nel = NonEmptyList(err1, List(err2))
@@ -44,14 +44,14 @@ class CombinedValidationOfCaseClassMembers extends FlatSpec with Matchers {
 
   "Validation of data object with valid members (with non-combining strings)" should
     "contain data object with correct telephone number" in {
-    val data = Data2(NonCombiningString("good@email.com"), NonCombiningString("+447912341111"))
+    val data = MyData(NonCombiningString("good@email.com"), NonCombiningString("+447912341111"))
     val validation = CombineImprovedValidator.validateData(data)
     validation shouldBe Validated.Valid(data)
   }
 
   "Validation of data object with valid members (with non-combining strings)" should
     "contain data object with correct telephone number (andThen implementation)" in {
-    val data = Data2(NonCombiningString("good@email.com"), NonCombiningString("+447912341111"))
+    val data = MyData(NonCombiningString("good@email.com"), NonCombiningString("+447912341111"))
     val validation = AndThenValidator.validateData(data)
     validation shouldBe Validated.Valid(data)
   }
