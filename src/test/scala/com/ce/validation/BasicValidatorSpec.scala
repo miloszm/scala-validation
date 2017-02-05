@@ -1,10 +1,10 @@
 package com.ce.validation
 
 import cats.data.{NonEmptyList, Validated}
-import com.ce.{Data, BasicValidator}
+import com.ce.{BasicValidator, Data}
 import org.scalatest.{FlatSpec, Matchers}
 
-class ValidationOfCaseClassMembers extends FlatSpec with Matchers {
+class BasicValidatorSpec extends FlatSpec with Matchers {
 
   "Validation of data object with invalid members" should
     "contain list of validation errors" in {
