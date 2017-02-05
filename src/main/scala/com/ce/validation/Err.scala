@@ -3,11 +3,9 @@ package com.ce.validation
 object ErrorCode extends Enumeration {
   type ErrorCode = Value
   val InvalidEmailFormat,
-  PhoneTooShort,
-  PhoneTooLong,
-  PhoneMustBeNumeric,
-  PhoneMustHaveUKCountryCode,
-  EmailMustContainWordGood= Value
+  EmailMustContainKeyword,
+  InvalidPhoneNumberFormat,
+  InvalidPhoneNumberPrefix = Value
 }
 
 import com.ce.validation.ErrorCode.ErrorCode
